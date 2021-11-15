@@ -11,4 +11,16 @@ const seq = new Sequelize(process.env.DATABASE_URL)
 
 app.listen(parseInt(process.env.PORT), () => {
     console.log(`Server is running at port: ${process.env.PORT}`)
+
+    testDatabaseConnection()
 })
+
+const testDatabaseConnection = async () => {
+    try {
+        await seq.authenticate()
+        console.log("Database connection has been established")
+    }
+    catch(err) {
+        console.log("Unable to connect to database")
+    }
+}
