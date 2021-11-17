@@ -124,3 +124,4 @@ dist
 .pnp.*
 
 app.css
+yarn.lock
