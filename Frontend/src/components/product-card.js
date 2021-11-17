@@ -7,6 +7,10 @@ export default function ProductCard({id, name, price, imageUrl, cartProducts, se
     console.log(cartProducts)
 
     const handleClick = () => {
+        if(quantity === 0) {
+            return;
+        }
+
         setCartProducts([...cartProducts, {
             id,
             name,
@@ -34,7 +38,7 @@ export default function ProductCard({id, name, price, imageUrl, cartProducts, se
                     <p className="text-gray-600">{price}€</p>
                 </div>
                 <div className="flex items-center justify-between">
-                    <input className="w-20" type="number" name="count" value={quantity} onChange={handleChangeQuantity} />
+                    <input className="w-20" type="number" min="0" name="count" value={quantity} onChange={handleChangeQuantity} />
                     <button className="ml-4 px-4 py-2 bg-black text-white" onClick={handleClick}>Pridať</button>
                 </div>
             </div>
