@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
 import CartItem from './cart-item'
 
-export default function Cart({products}) {
+export default function Cart({cartProducts}) {
     return (
-        <div>
+        <div className="px-4">
             <h2 className="text-2xl text-bold text-center mb-4">Nákupný košík</h2>
 
-            {products && products.map((product) => 
+            {cartProducts && cartProducts.map((product) => 
                 <CartItem
                     name={product.name}
                     price={product.price}
@@ -19,5 +19,5 @@ export default function Cart({products}) {
 }
 
 Cart.propTypes = {
-    products: PropTypes.array
+    cartProducts: PropTypes.array
 }

@@ -12,7 +12,8 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "sequelize-cli": "^6.3.0"
   },
   "dependencies": {
     "dotenv-safe": "^8.2.0",
