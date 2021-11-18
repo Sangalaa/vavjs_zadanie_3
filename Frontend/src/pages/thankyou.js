@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import AdBanner from '../components/ad-banner'
 import Header from '../components/header'
 
