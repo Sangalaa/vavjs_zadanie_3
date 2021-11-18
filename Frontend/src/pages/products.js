@@ -5,7 +5,7 @@ import Cart from '../components/cart/cart';
 import { useState } from 'react'
 
 export default function Products() {
-    // DB call
+    // TODO db call
     const products = [
         {
             id: 1,

@@ -2,7 +2,7 @@ import AdBanner from '../components/ad-banner'
 import Header from '../components/header'
 
 export default function ThankYou() {
-    // DB call
+    // TODO db cal
 
     return (
         <>
