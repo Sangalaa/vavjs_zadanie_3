@@ -7,7 +7,7 @@ export default function InputField({
     ...props
 }) {
     return (
-        <div className="flex flex-col" {...props}>
+        <div className="flex flex-col">
             <label class="text-left text-gray-500" for={name}>{label}</label>
             <input 
                 class="
@@ -23,6 +23,7 @@ export default function InputField({
                 id={name}
                 type={type}
                 name={name}
+                {...props}
             />
         </div>
     )

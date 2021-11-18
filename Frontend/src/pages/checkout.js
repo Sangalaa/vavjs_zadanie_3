@@ -85,7 +85,7 @@ export default function Checkout() {
                                 />
                             </div>
                             <div className="flex flex-col mt-8 items-center">
-                                <button className="bg-black text-white px-4 py-3 w-2/6">Objednať</button>
+                                <button type="submit" className="bg-black text-white px-4 py-3 w-2/6">Objednať</button>
                             </div>
                         </form>
                     </section>

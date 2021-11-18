@@ -3,6 +3,7 @@ import CartItem from "../components/cart/cart-item";
 import Header from "../components/header";
 import Tab from "../components/tab/tab";
 import Tabs from "../components/tab/tabs";
+import InputField from "../components/forms/input-field";
 
 export default function Admin() {
     // TODO db call
@@ -23,6 +24,21 @@ export default function Admin() {
         city: 'Bratislava',
         psc: '12345'
     }
+
+    const ads = [
+        {
+            id: 1,
+            link: 'https://www.google.sk',
+            imageLink: 'https://img.kupino.sk/kupi/thumbs/loga_shopy/tesco_600_600.png',
+            counter: 10
+        },
+        {
+            id: 2,
+            link: 'https://www.google.sk',
+            imageLink: 'https://img.kupino.sk/kupi/thumbs/loga_shopy/tesco_600_600.png',
+            counter: 30
+        },
+    ]
 
     return (
         <>
@@ -73,9 +89,34 @@ export default function Admin() {
                     </div>
                 </Tab>
                 <Tab title="Reklamy" className="mt-8">
-                    <table>
-                        {/* TODO */}
-                    </table>
+                    <section>
+                        {ads && ads.map(ad => (
+                            <form method="POST" action="" className="grid grid-cols-4 gap-8 p-4">
+                                <InputField
+                                    name="link"
+                                    type="text"
+                                    label="Link"
+                                    defaultValue={ad.link}
+                                />
+                                <InputField
+                                    name="imageLink"
+                                    type="text"
+                                    label="Obrázok"
+                                    defaultValue={ad.imageLink}
+                                />
+                                <InputField
+                                    name="counter"
+                                    type="number"
+                                    label="Počítadlo"
+                                    min="0"
+                                    defaultValue={ad.counter}
+                                />
+                                <div className="flex flex-col items-center justify-end">
+                                    <button type="submit" className="bg-black text-white p-3 border-2 border-black w-full">Zmeniť</button>
+                                </div>
+                            </form>
+                        ))}
+                    </section>
                 </Tab>
             </Tabs>
         </main>
