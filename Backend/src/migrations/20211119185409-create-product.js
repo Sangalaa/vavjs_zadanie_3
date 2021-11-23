@@ -15,15 +15,24 @@ module.exports = {
       name: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notEmpty: true
+        }
       },
       image_link: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
+        validate: {
+          isUrl: true
+        }
       },
       price: {
         type: Sequelize.DataTypes.DOUBLE,
         allowNull: false,
-        defaultValue: 0
+        defaultValue: 0,
+        validate: {
+          min: 0
+        }
       },
       createdAt: {
         allowNull: false,

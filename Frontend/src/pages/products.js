@@ -1,39 +1,19 @@
 import Header from '../components/header'
 import ProductCard  from '../components/product-card';
 import Cart from '../components/cart/cart';
+import usePersistentState from '../hooks/usePersistentState'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function Products() {
-    // TODO db call
-    const products = [
-        {
-            id: 1,
-            name: 'Pearl River EU118-WP-Biela',
-            price: 3775,
-            imageUrl: 'https://muzikercdn.com/uploads/products/6397/639786/thumb_2870d1bf.jpg'
-        },
-        {
-            id: 2,
-            name: 'Pearl River EU118-EBN Ebony Polish',
-            price: 3775,
-            imageUrl: 'https://muzikercdn.com/uploads/products/8612/861208/thumb_4954bfd8.jpg'
-        },
-        {
-            id: 3,
-            name: 'Yamaha B2E PE Polished Ebony',
-            price: 5369,
-            imageUrl: 'https://muzikercdn.com/uploads/products/239/23976/thumb_39a0fe36.jpg'
-        }
-    ]
+    const [cartProducts, setCartProducts] = usePersistentState('cart', [])
+    const [products, setProducts] = useState([]);
 
-    const [cartProducts, setCartProducts] = useState([{
-        id: 1,
-        name: "Pearl River EU118-WP-Biela",
-        price: 3775,
-        quantity: 100,
-        imageUrl: 'https://muzikercdn.com/uploads/products/6397/639786/thumb_2870d1bf.jpg'
-    }])
+    useEffect(() => {
+        fetch('http://localhost:8080/products')
+        .then(response => response.json())
+        .then(response => setProducts(response));
+    }, []);
 
     return (
         <>
@@ -45,7 +25,7 @@ export default function Products() {
                             id={product.id}
                             name={product.name}
                             price={product.price}
-                            imageUrl={product.imageUrl}
+                            imageUrl={product.image_link}
                             cartProducts={cartProducts}
                             setCartProducts={setCartProducts}
                         />

@@ -2,31 +2,10 @@ import CartItem from "../components/cart/cart-item";
 import InputField from "../components/forms/input-field";
 import Header from "../components/header";
 import * as ROUTES from '../constants/routes'
+import usePersistentState from "../hooks/usePersistentState";
 
 export default function Checkout() {
-    const products = [
-        {
-            id: 1,
-            name: 'Pearl River EU118-WP-Biela',
-            price: 3775,
-            quantity: 10,
-            imageUrl: 'https://muzikercdn.com/uploads/products/6397/639786/thumb_2870d1bf.jpg'
-        },
-        {
-            id: 2,
-            name: 'Pearl River EU118-EBN Ebony Polish',
-            price: 3775,
-            quantity: 2,
-            imageUrl: 'https://muzikercdn.com/uploads/products/8612/861208/thumb_4954bfd8.jpg'
-        },
-        {
-            id: 3,
-            name: 'Yamaha B2E PE Polished Ebony',
-            price: 5369,
-            quantity: 4,
-            imageUrl: 'https://muzikercdn.com/uploads/products/239/23976/thumb_39a0fe36.jpg'
-        }
-    ]
+    const [cartProducts, _] = usePersistentState('cart', [])
 
     return (
         <>
@@ -93,7 +72,7 @@ export default function Checkout() {
                         <h2 className="text-2xl text-bold text-center">Tvoja objednávka</h2>
                         
                         <div className="flex flex-col items-center mt-8">
-                            {products && products.map(product => 
+                                {cartProducts && cartProducts.map(product =>
                                 <CartItem
                                     name={product.name}
                                     price={product.price}
@@ -105,10 +84,10 @@ export default function Checkout() {
 
                         <h3 className="text-xl text-bold text-center mt-8">
                             Celková cena: 
-                            {!products ? 
+                                {!cartProducts ?
                                 ' ' + 0 
                                 :
-                                ' ' + products.reduce((previous, current, index) => {
+                                    ' ' + cartProducts.reduce((previous, current, index) => {
                                     if(index === 1) {
                                         return previous.price * previous.quantity + current.price * current.quantity
                                     }

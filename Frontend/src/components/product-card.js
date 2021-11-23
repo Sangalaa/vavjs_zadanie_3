@@ -4,24 +4,30 @@ import { useState } from 'react';
 export default function ProductCard({id, name, price, imageUrl, cartProducts, setCartProducts}) {
     const [quantity, setQuantity] = useState(0);
 
-    console.log(cartProducts)
-
     const handleClick = () => {
-        if(quantity === 0) {
+        if(quantity && quantity === 0) {
             return;
         }
 
-        setCartProducts([...cartProducts, {
-            id,
-            name,
-            price,
-            quantity,
-            imageUrl
-        }])
+        const productIndex = cartProducts.findIndex((product => product.id === id))
+
+        if(productIndex >= 0) {
+            cartProducts[productIndex].quantity += quantity
+            setCartProducts([...cartProducts])
+        }
+        else {
+            setCartProducts([...cartProducts, {
+                id,
+                name,
+                price,
+                quantity,
+                imageUrl
+            }])
+        }
     }
 
     const handleChangeQuantity = (e) => {
-        setQuantity(e.target.value)
+        setQuantity(parseInt(e.target.value))
     }
 
     return (
@@ -47,7 +53,7 @@ export default function ProductCard({id, name, price, imageUrl, cartProducts, se
 }
 
 ProductCard.propTypes = {
-    id: PropTypes.number,
+    id: PropTypes.string,
     imageUrl: PropTypes.string,
     name: PropTypes.string,
     price: PropTypes.number,
