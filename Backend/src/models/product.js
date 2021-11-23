@@ -21,14 +21,15 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
-      defaultValue: v4()
+      defaultValue: () => v4()
     },
     name: DataTypes.STRING,
     image_link: DataTypes.STRING,
     price: DataTypes.DOUBLE
   }, {
     sequelize,
-    modelName: 'product'
+    modelName: 'product',
+    freezeTableName: true
   });
 
   return product;

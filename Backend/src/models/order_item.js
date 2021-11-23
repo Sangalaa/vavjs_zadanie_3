@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const { v4 } = require('uuid');
 module.exports = (sequelize, DataTypes) => {
   class order_item extends Model {
     /**
@@ -18,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
   order_item.init({
     id: {
       type: DataTypes.UUID,
-      primaryKey: true
+      primaryKey: true,
+      defaultValue: () => v4()
     },
     order_id: DataTypes.UUID,
     product_id: DataTypes.UUID,
@@ -27,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'order_item',
+    freezeTableName: true
   });
   return order_item;
 };

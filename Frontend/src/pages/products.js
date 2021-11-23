@@ -2,6 +2,7 @@ import Header from '../components/header'
 import ProductCard  from '../components/product-card';
 import Cart from '../components/cart/cart';
 import usePersistentState from '../hooks/usePersistentState'
+import { fetchJSONData } from '../utils/utils';
 
 import { useState, useEffect } from 'react'
 
@@ -10,9 +11,12 @@ export default function Products() {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/products')
-        .then(response => response.json())
-        .then(response => setProducts(response));
+        fetchJSONData('http://localhost:8080/products', 'GET', undefined)
+        .then(response => {
+            if(response.success) {
+                setProducts(response.data)
+            }
+        })
     }, []);
 
     return (

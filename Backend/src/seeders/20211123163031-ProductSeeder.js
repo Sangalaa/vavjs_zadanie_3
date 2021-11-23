@@ -14,7 +14,7 @@ module.exports = {
      * }], {});
     */
 
-    await queryInterface.bulkInsert('products',
+    await queryInterface.bulkInsert('product',
       [
         {
           id: v4(),

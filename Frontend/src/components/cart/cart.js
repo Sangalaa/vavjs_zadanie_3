@@ -17,7 +17,7 @@ export default function Cart({cartProducts}) {
 
             <h3 className="text-xl text-bold text-center mt-4">
                 Celková cena:
-                {!cartProducts ?
+                {(!cartProducts || cartProducts.length === 0) ?
                     ' ' + 0
                     :
                     ' ' + cartProducts.reduce((previous, current, index) => {

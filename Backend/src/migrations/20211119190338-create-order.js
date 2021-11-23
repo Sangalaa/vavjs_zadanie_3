@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('orders', {
+    await queryInterface.createTable('order', {
       id: {
         allowNull: false,
         autoIncrement: false,
@@ -14,7 +14,7 @@ module.exports = {
         allowNull: false,
 
         references: {
-          model: 'users',
+          model: 'user',
           key: 'id'
         }
       },
@@ -22,6 +22,22 @@ module.exports = {
         type: Sequelize.ENUM(['paid', 'unpaid']),
         allowNull: false,
         defaultValue: 'unpaid'
+      },
+      street: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      houseNumber: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      city: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      psc: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +52,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('orders');
+    await queryInterface.dropTable('order');
   }
 };

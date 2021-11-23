@@ -4,6 +4,7 @@ export default function InputField({
     name,
     type,
     label,
+    error,
     ...props
 }) {
     return (
@@ -25,6 +26,7 @@ export default function InputField({
                 name={name}
                 {...props}
             />
+            {error && <div className="text-red-500">{error}</div>}
         </div>
     )
 }
