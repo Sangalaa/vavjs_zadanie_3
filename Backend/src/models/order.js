@@ -9,16 +9,19 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ User, OrderItem }) {
+    static associate({User, order_item}) {
       // define association here
-      this.belongsTo(User)
-      this.belongsToMany(OrderItem)
+      this.belongsTo(User, {foreignKey: 'user_id'});
+      this.hasMany(order_item, {foreignKey: 'order_id'});
     }
   };
   order.init({
-    id: DataTypes.UUID,
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+    },
     user_id: DataTypes.UUID,
-    status: DataTypes.ENUM
+    status: DataTypes.ENUM('paid', 'unpaid')
   }, {
     sequelize,
     modelName: 'order',

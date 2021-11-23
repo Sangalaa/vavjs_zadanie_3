@@ -11,10 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      console.log(models)
     }
   };
   Ads.init({
-    id: DataTypes.UUID,
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true
+    },
     link: DataTypes.STRING,
     image_link: DataTypes.STRING,
     counter: DataTypes.INTEGER

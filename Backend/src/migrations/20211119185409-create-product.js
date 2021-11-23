@@ -1,4 +1,7 @@
 'use strict';
+
+const {v4} = require('uuid');
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('products', {
@@ -6,40 +9,31 @@ module.exports = {
         allowNull: false,
         autoIncrement: false,
         primaryKey: true,
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4
+        type: Sequelize.DataTypes.UUID,
+        defaultValue: Sequelize.DataTypes.UUIDV4
       },
       name: {
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
         allowNull: false,
-        validate: {
-          notEmpty: true
-        }
       },
       image_link: {
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
         allowNull: false,
-        validate: {
-          isUrl: true
-        }
       },
       price: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DataTypes.DOUBLE,
         allowNull: false,
-        defaultValue: 0,
-        validate: {
-          min: 0
-        }
+        defaultValue: 0
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        type: Sequelize.DataTypes.DATE,
+        defaultValue: Sequelize.fn('now')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        type: Sequelize.DataTypes.DATE,
+        defaultValue: Sequelize.fn('now')
       }
     });
   },
