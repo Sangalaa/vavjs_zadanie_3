@@ -34,8 +34,6 @@ export default function Checkout() {
         else {
             setFormErrors(response.errors)
         }
-
-        
     }
 
     return (

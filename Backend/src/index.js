@@ -226,7 +226,26 @@ app.get('/admin/ads', (req, res) => {
 });
 
 app.post('/admin/ads', (req, res) => {
+    const { link, imageLink } = req.body;
 
+    sequelize.models.ad.create({
+        link,
+        image_link: imageLink
+    })
+    .then(ad => {
+        return res.json({
+            success: true,
+            data: [ad],
+            errors: []
+        });
+    })
+    .catch(err => {
+        return res.status(400).json({
+            success: false,
+            data: [],
+            errors: [{message: err.message}]
+        })
+    });
 });
 
 app.put('/admin/ads/:id', (req, res) => {
