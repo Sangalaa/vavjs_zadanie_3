@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require("dotenv-safe/config.js")
 
-const { 
+const {
     validateEmail,
     validateName,
     validateSurname,
@@ -10,7 +10,7 @@ const {
     validateHouseNumber,
     validateCity,
     validatePsc,
- } = require('./utils/utils')
+} = require('./utils/utils')
 
 const app = express()
 app.use(express.json())
@@ -23,20 +23,20 @@ const { sequelize } = require('./models/index.js')
 
 app.get('/products', (_, res) => {
     sequelize.models.product.findAll()
-    .then(products => {
-        return res.json({
-            success: true,
-            data: products,
-            errors: []
-        });
-    })
-    .catch(err => {
-        return res.status(500).json({
-            success: false,
-            data: [],
-            errors: [{ message: err.message}]
+        .then(products => {
+            return res.json({
+                success: true,
+                data: products,
+                errors: []
+            });
         })
-    });
+        .catch(err => {
+            return res.status(500).json({
+                success: false,
+                data: [],
+                errors: [{ message: err.message }]
+            })
+        });
 });
 
 app.post('/checkout', async (req, res) => {
@@ -45,56 +45,56 @@ app.post('/checkout', async (req, res) => {
     // validate data
     errors = []
 
-    if(!validateEmail(email)) {
+    if (!validateEmail(email)) {
         errors.push({
             field: 'email',
             message: 'e-mail has incorrect format'
         })
     }
 
-    if(!validateName(name)) {
+    if (!validateName(name)) {
         errors.push({
             field: 'name',
             message: 'name has incorrect format'
         })
     }
 
-    if(!validateSurname(surname)) {
+    if (!validateSurname(surname)) {
         errors.push({
             field: 'surname',
             message: 'surname has incorrect format'
         })
     }
 
-    if(!validateStreet(street)) {
+    if (!validateStreet(street)) {
         errors.push({
             field: 'street',
             message: 'street has incorrect format'
         })
     }
 
-    if(!validateHouseNumber(houseNumber)) {
+    if (!validateHouseNumber(houseNumber)) {
         errors.push({
             field: 'houseNumber',
             message: 'houseNumber has incorrect format'
         })
     }
 
-    if(!validateCity(city)) {
+    if (!validateCity(city)) {
         errors.push({
             field: 'city',
             message: 'city has incorrect format'
         })
     }
 
-    if(!validatePsc(psc)) {
+    if (!validatePsc(psc)) {
         errors.push({
             field: 'psc',
             message: 'psc has incorrect format'
         })
     }
 
-    if(errors.length > 0) {
+    if (errors.length > 0) {
         return res.status(400).json({
             success: false,
             errors
@@ -119,7 +119,13 @@ app.post('/checkout', async (req, res) => {
                 lastName: surname,
                 email
             })
-                .then(user => resolve(user))
+                .then(user => {
+                    if (!user) {
+                        reject(`Error while creating a new user`)
+                        return
+                    }
+                    resolve(user)
+                })
                 .catch(err => reject(err))
         })
             .catch(err => {
@@ -141,12 +147,19 @@ app.post('/checkout', async (req, res) => {
                 city,
                 psc
             })
-                .then(order => resolve(order))
+                .then(order => {
+                    if (!order) {
+                        reject(`Error while creating a new order`)
+                        return
+                    }
+                    resolve(order)
+                })
                 .catch(err => reject(err))
         })
-            .catch(() => {
-                throw new Error()
+            .catch((err) => {
+                throw new Error(err.message)
             });
+
 
 
         // put items from cart into order
@@ -154,11 +167,18 @@ app.post('/checkout', async (req, res) => {
             await promise
             const product = await new Promise((resolve, reject) => {
                 sequelize.models.product.findByPk(cartItem.id)
-                    .then(product => resolve(product))
+                    .then(product => {
+                        if (!product) {
+                            reject(`Product with id: ${cartItem.id} not found`)
+                            return
+                        }
+
+                        resolve(product)
+                    })
                     .catch(err => reject(err))
             })
-                .catch(() => {
-                    throw new Error()
+                .catch(err => {
+                    throw new Error(err.message)
                 });
 
             await sequelize.models.order_item.create({
@@ -167,14 +187,15 @@ app.post('/checkout', async (req, res) => {
                 quantity: cartItem.quantity,
                 price: product.price
             })
-                .catch(() => {
-                    throw new Error()
+                .catch((err) => {
+                    throw new Error(err.message)
                 });
         }, Promise.resolve())
 
         await transaction.commit()
     }
     catch (err) {
+        console.log(err)
         await transaction.rollback()
 
         if (err instanceof JsonError) {
@@ -187,7 +208,7 @@ app.post('/checkout', async (req, res) => {
 
         return res.status(500).json({
             success: false,
-            errors: [],
+            errors: [{ message: err.message }],
             data: []
         })
     }
@@ -200,19 +221,46 @@ app.post('/checkout', async (req, res) => {
 });
 
 app.get('/admin/orders', (req, res) => {
-    
+    sequelize.models.order.findAll({ include: [
+        { model: sequelize.models.order_item, attributes: ['quantity', 'price', 'product_id'], 
+            include: [{model: sequelize.models.product, attributes: ['price', 'image_link', 'name']}] }
+    ] })
+        .then(async orders => {
+            return res.json({
+                success: true,
+                data: orders,
+                errors: []
+            })
+        })
+        .catch(err => {
+            return res.status(500).json({
+                success: false,
+                data: [],
+                errors: [{ message: err.message }]
+            })
+        })
 });
 
-app.put('/admin/orders', (req, res) => {
+app.put('/admin/orders/:id', (req, res) => {
+    const orderId = req.params.id;
 
-});
+    sequelize.models.order.findByPk(orderId)
+    .then(async order => {
+        if(!order) {
+            return res.status(400).json({
+                success: false,
+                data: [],
+                errors: [{ message: 'Incorrect id' }]
+            })
+        }
 
-app.get('/admin/ads', (req, res) => {
-    sequelize.models.ad.findAll()
-    .then(ads => {
+        order.status = 'paid'
+
+        await order.save()
+
         return res.json({
             success: true,
-            data: ads,
+            data: [order],
             errors: []
         })
     })
@@ -220,9 +268,27 @@ app.get('/admin/ads', (req, res) => {
         return res.status(500).json({
             success: false,
             data: [],
-            errors: [{message: err.message}]
+            errors: [{ message: err.message }]
         })
     })
+});
+
+app.get('/admin/ads', (req, res) => {
+    sequelize.models.ad.findAll()
+        .then(ads => {
+            return res.json({
+                success: true,
+                data: ads,
+                errors: []
+            })
+        })
+        .catch(err => {
+            return res.status(500).json({
+                success: false,
+                data: [],
+                errors: [{ message: err.message }]
+            })
+        })
 });
 
 app.post('/admin/ads', (req, res) => {
@@ -232,26 +298,70 @@ app.post('/admin/ads', (req, res) => {
         link,
         image_link: imageLink
     })
-    .then(ad => {
-        return res.json({
-            success: true,
-            data: [ad],
-            errors: []
-        });
-    })
-    .catch(err => {
-        return res.status(400).json({
-            success: false,
-            data: [],
-            errors: [{message: err.message}]
+        .then(ad => {
+            return res.json({
+                success: true,
+                data: [ad],
+                errors: []
+            });
         })
-    });
+        .catch(err => {
+            return res.status(400).json({
+                success: false,
+                data: [],
+                errors: [{ message: err.message }]
+            })
+        });
 });
 
 app.put('/admin/ads/:id', (req, res) => {
+    const { link, image_link } = req.body;
+    const id = req.params.id;
 
+    sequelize.models.ad.findByPk(id)
+        .then(async ad => {
+            ad.link = link
+            ad.image_link = image_link
+            ad.counter = 0
+
+            await ad.save()
+
+            return res.json({
+                success: true,
+                data: [ad],
+                errors: []
+            })
+        })
+        .catch(err => {
+            return res.status(400).json({
+                success: false,
+                data: [],
+                errors: [{ message: err.message }]
+            })
+        });
 });
 
+app.delete('/admin/ads/:id', (req, res) => {
+    const id = req.params.id;
+
+    sequelize.models.ad.findByPk(id)
+        .then(async ad => {
+            await ad.destroy()
+
+            return res.json({
+                success: true,
+                data: [],
+                errors: []
+            })
+        })
+        .catch(err => {
+            return res.status(400).json({
+                success: false,
+                data: [],
+                errors: [{ message: err.message }]
+            })
+        })
+});
 
 app.listen(parseInt(process.env.PORT), () => {
     console.log(`Server is running at port: ${process.env.PORT}`)

@@ -48,7 +48,7 @@ export default function Admin() {
 
         const payload = Object.fromEntries(form.entries());
 
-        const response = await fetchJSONData('http://localhost:8080/admin/ads', 'POST', JSON.stringify(payload))
+        const response = await fetchJSONData(e.target.action, 'POST', JSON.stringify(payload))
             .catch(err => console.log(err))
 
         if (response.success) {
@@ -68,8 +68,28 @@ export default function Admin() {
         }
     }
 
-    const handleChangeAd = (e) => {
+    const handleChangeAd = async (e) => {
+        e.preventDefault();
 
+        console.log(e.target)
+
+        const form = new FormData(e.target)
+
+        const payload = Object.fromEntries(form.entries());
+
+        const response = await fetchJSONData(e.target.action, 'PUT', JSON.stringify(payload))
+            .catch(err => console.log(err))
+
+        if (response.success) {
+            const responseAd = response.data[0]
+
+            const adIndex = ads.findIndex((ad => ad.id === responseAd?.id))
+            if (adIndex > 0) {
+                ads[adIndex].link = responseAd?.link
+                ads[adIndex].image_link = responseAd?.image_link
+                setAds([...ads])
+            }
+        }
     }
 
     return (
@@ -123,7 +143,7 @@ export default function Admin() {
                     <Tab title="Reklamy" className="mt-8">
                         <section>
                             <h2 class="font-medium text-2xl py-2">Nová reklama</h2>
-                            <form method="POST" action="http://localhost:8080/admin/ads" className="grid grid-cols-3 gap-8 py-2" onSubmit={ handleAddAd }>
+                            <form method="POST" action="http://localhost:8080/admin/ads" className="grid grid-cols-3 gap-8 py-2" onSubmit={handleAddAd}>
                                 <InputField
                                     name="link"
                                     type="text"
@@ -146,18 +166,20 @@ export default function Admin() {
                         <section className="mt-8">
                             <h2 class="font-medium text-2xl py-2">Reklamy</h2>
                             {ads && ads.map(ad => (
-                                <form method="POST" action={`http://localhost:8080/admin/ads`} className="grid grid-cols-4 gap-8 py-2">
+                                <div className="grid grid-cols-5 gap-8 py-2">
                                     <InputField
                                         name="link"
                                         type="text"
                                         label="Link"
                                         defaultValue={ad.link}
+                                        required
                                     />
                                     <InputField
                                         name="imageLink"
                                         type="text"
                                         label="Obrázok"
                                         defaultValue={ad.image_link}
+                                        required
                                     />
                                     <InputField
                                         name="counter"
@@ -166,11 +188,15 @@ export default function Admin() {
                                         min="0"
                                         defaultValue={ad.counter}
                                         disabled
+                                        required
                                     />
                                     <div className="flex flex-col items-center justify-end">
-                                        <button type="submit" className="bg-black text-white p-3 border-2 border-black w-full" onClick={handleChangeAd}>Zmeniť</button>
+                                        <button className="bg-black text-white p-3 border-2 border-black w-full">Zmeniť</button>
                                     </div>
-                                </form>
+                                    <div className="flex flex-col items-center justify-end">
+                                        <button className="bg-black text-white p-3 border-2 border-black w-full">Vymazat</button>
+                                    </div>
+                                </div>
                             ))}
                         </section>
                     </Tab>
