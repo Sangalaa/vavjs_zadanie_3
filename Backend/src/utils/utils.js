@@ -34,6 +34,11 @@ const validatePsc = (psc) => {
     return pscRegex.test(psc)
 }
 
+const validateImageURL = (url) => {
+    const urlRegex = /\.(jpeg|jpg|gif|png)$/;
+    return urlRegex.test(url);
+}
+
 module.exports = {
     validateEmail,
     validateName,
@@ -41,5 +46,6 @@ module.exports = {
     validateStreet,
     validateHouseNumber,
     validateCity,
-    validatePsc
+    validatePsc,
+    validateImageURL
 }

@@ -10,6 +10,7 @@ const {
     validateHouseNumber,
     validateCity,
     validatePsc,
+    validateImageURL
 } = require('./utils/utils')
 
 const app = express()
@@ -34,7 +35,7 @@ app.get('/products', (_, res) => {
             return res.status(500).json({
                 success: false,
                 data: [],
-                errors: [{ message: err.message }]
+                errors: [{ field: '', message: err.message, value: '' }]
             })
         });
 });
@@ -48,55 +49,63 @@ app.post('/checkout', async (req, res) => {
     if (!validateEmail(email)) {
         errors.push({
             field: 'email',
-            message: 'e-mail has incorrect format'
+            message: 'e-mail has incorrect format',
+            value: email
         })
     }
 
     if (!validateName(name)) {
         errors.push({
             field: 'name',
-            message: 'name has incorrect format'
+            message: 'name has incorrect format',
+            value: name
         })
     }
 
     if (!validateSurname(surname)) {
         errors.push({
             field: 'surname',
-            message: 'surname has incorrect format'
+            message: 'surname has incorrect format',
+            value: surname
         })
     }
 
     if (!validateStreet(street)) {
         errors.push({
             field: 'street',
-            message: 'street has incorrect format'
+            message: 'street has incorrect format',
+            value: street
         })
     }
 
     if (!validateHouseNumber(houseNumber)) {
         errors.push({
             field: 'houseNumber',
-            message: 'houseNumber has incorrect format'
+            message: 'houseNumber has incorrect format',
+            value: houseNumber
         })
     }
 
     if (!validateCity(city)) {
         errors.push({
             field: 'city',
-            message: 'city has incorrect format'
+            message: 'city has incorrect format',
+            value: city
         })
     }
 
     if (!validatePsc(psc)) {
         errors.push({
             field: 'psc',
-            message: 'psc has incorrect format'
+            message: 'psc has incorrect format',
+            value: psc
         })
     }
 
     if (errors.length > 0) {
         return res.status(400).json({
             success: false,
+            data: [],
             errors
         })
     }
@@ -131,7 +140,8 @@ app.post('/checkout', async (req, res) => {
             .catch(err => {
                 const payload = err.errors.map((err) => ({
                     field: err.path,
-                    message: err.message
+                    message: err.message,
+                    value: err.value
                 }))
 
                 throw new JsonError(payload)
@@ -157,10 +167,14 @@ app.post('/checkout', async (req, res) => {
                 .catch(err => reject(err))
         })
             .catch((err) => {
-                throw new Error(err.message)
+                const payload = err.errors.map((err) => ({
+                    field: err.path,
+                    message: err.message,
+                    value: err.value
+                }))
+
+                throw new JsonError(payload)
             });
-
-
 
         // put items from cart into order
         await cart.reduce(async (promise, cartItem) => {
@@ -178,7 +192,13 @@ app.post('/checkout', async (req, res) => {
                     .catch(err => reject(err))
             })
                 .catch(err => {
-                    throw new Error(err.message)
+                    const payload = err.errors.map((err) => ({
+                        field: err.path,
+                        message: err.message,
+                        value: err.value
+                    }))
+
+                    throw new JsonError(payload)
                 });
 
             await sequelize.models.order_item.create({
@@ -188,7 +208,13 @@ app.post('/checkout', async (req, res) => {
                 price: product.price
             })
                 .catch((err) => {
-                    throw new Error(err.message)
+                    const payload = err.errors.map((err) => ({
+                        field: err.path,
+                        message: err.message,
+                        value: err.value
+                    }))
+
+                    throw new JsonError(payload)
                 });
         }, Promise.resolve())
 
@@ -208,8 +234,8 @@ app.post('/checkout', async (req, res) => {
 
         return res.status(500).json({
             success: false,
-            errors: [{ message: err.message }],
-            data: []
+            data: [],
+            errors: [{ field: '', message: err.message, value: '' }]
         })
     }
 
@@ -217,6 +243,24 @@ app.post('/checkout', async (req, res) => {
         success: true,
         errors: [],
         data: []
+    })
+});
+
+app.get('/ads', (req, res) => {
+    sequelize.models.ad.findAll({order: sequelize.literal('random()'), limit: 1})
+    .then(ad => {
+        return res.json({
+            success: true,
+            data: [ad],
+            errors: []
+        })
+    })
+    .catch(err => {
+        return res.status(500).json({
+            success: false,
+            data: [],
+            errors: [{ field: '', message: err.message, value: ''}]
+        })
     })
 });
 
@@ -236,7 +280,7 @@ app.get('/admin/orders', (req, res) => {
             return res.status(500).json({
                 success: false,
                 data: [],
-                errors: [{ message: err.message }]
+                errors: [{ field:'', message: err.message, value: '' }]
             })
         })
 });
@@ -250,7 +294,7 @@ app.put('/admin/orders/:id', (req, res) => {
             return res.status(400).json({
                 success: false,
                 data: [],
-                errors: [{ message: 'Incorrect id' }]
+                errors: [{ field: 'id', message: 'Incorrect id', value: orderId }]
             })
         }
 
@@ -268,7 +312,7 @@ app.put('/admin/orders/:id', (req, res) => {
         return res.status(500).json({
             success: false,
             data: [],
-            errors: [{ message: err.message }]
+            errors: [{ field: '', message: err.message, value: '' }]
         })
     })
 });
@@ -286,17 +330,43 @@ app.get('/admin/ads', (req, res) => {
             return res.status(500).json({
                 success: false,
                 data: [],
-                errors: [{ message: err.message }]
+                errors: [{ field: '', message: err.message, value: '' }]
             })
         })
 });
 
 app.post('/admin/ads', (req, res) => {
-    const { link, imageLink } = req.body;
+    const { link, image_link } = req.body;
+
+    const errors = []
+
+    try {
+        url = new URL(link);
+    } catch (_) {
+        errors.push({ field: 'link', message: 'invalid format', value: link })
+    }
+
+    try {
+        url = new URL(image_link);
+    } catch (_) {
+        errors.push({ field: 'image_link', message: 'invalid format', value: image_link })
+    }
+
+    if (!validateImageURL(image_link)) {
+        errors.push({ field: 'image_link', message: 'Link is not image', value: image_link })
+    }
+
+    if (errors.length > 0) {
+        return res.status(400).json({
+            success: false,
+            data: [],
+            errors
+        })
+    }
 
     sequelize.models.ad.create({
         link,
-        image_link: imageLink
+        image_link
     })
         .then(ad => {
             return res.json({
@@ -309,7 +379,11 @@ app.post('/admin/ads', (req, res) => {
             return res.status(400).json({
                 success: false,
                 data: [],
-                errors: [{ message: err.message }]
+                errors: err.errors.map((err) => ({
+                    field: err.path,
+                    message: err.message,
+                    value: err.value
+                }))
             })
         });
 });
@@ -323,15 +397,18 @@ app.put('/admin/ads/:id', (req, res) => {
     try {
         url = new URL(link);
     } catch (_) {
-        errors.push({field: 'link', message: 'invalid format'})
+        errors.push({field: 'link', message: 'invalid format', value: link})
     }
 
     try {
         url = new URL(image_link);
     } catch (_) {
-        errors.push({ field: 'image_link', message: 'invalid format' })
+        errors.push({ field: 'image_link', message: 'invalid format', value: image_link })
     }
 
+    if (!validateImageURL(image_link)) {
+        errors.push({field: 'image_link', message: 'Link is not image', value: image_link})
+    }
 
     if(errors.length > 0) {
         return res.status(400).json({
@@ -343,6 +420,18 @@ app.put('/admin/ads/:id', (req, res) => {
 
     sequelize.models.ad.findByPk(id)
         .then(async ad => {
+            if(!ad) {
+                return res.status(400).json({
+                    success: false,
+                    data: [],
+                    errors: [{
+                        field: 'id',
+                        message: 'Invalid id',
+                        value: id
+                    }]
+                });
+            }
+
             ad.link = link
             ad.image_link = image_link
             ad.counter = 0
@@ -359,7 +448,11 @@ app.put('/admin/ads/:id', (req, res) => {
             return res.status(400).json({
                 success: false,
                 data: [],
-                errors: [{ message: err.message }]
+                errors: err.errors.map((err) => ({
+                    field: err.path,
+                    message: err.message,
+                    value: err.value
+                }))
             })
         });
 });
@@ -369,6 +462,18 @@ app.delete('/admin/ads/:id', (req, res) => {
 
     sequelize.models.ad.findByPk(id)
         .then(async ad => {
+            if(!ad) {
+                return res.status(400).json({
+                    success: false,
+                    data: [],
+                    errors: [{
+                        field: 'id',
+                        message: 'Invalid id',
+                        value: id
+                    }]
+                });
+            }
+
             await ad.destroy()
 
             return res.json({
@@ -381,7 +486,11 @@ app.delete('/admin/ads/:id', (req, res) => {
             return res.status(400).json({
                 success: false,
                 data: [],
-                errors: [{ message: err.message }]
+                errors: [{
+                    field: '',
+                    message: err.message,
+                    value: ''
+                }]
             })
         })
 });
