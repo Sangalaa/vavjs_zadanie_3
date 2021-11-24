@@ -13,7 +13,7 @@ export default function Products() {
     useEffect(() => {
         fetchJSONData('http://localhost:8080/products', 'GET', undefined)
         .then(response => {
-            if(response.success) {
+            if(response?.success) {
                 setProducts(response.data)
             }
         })

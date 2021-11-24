@@ -4,6 +4,9 @@ import Header from "../components/header";
 import Tab from "../components/tab/tab";
 import Tabs from "../components/tab/tabs";
 import InputField from "../components/forms/input-field";
+import { fetchJSONData } from "../utils/utils";
+
+import { useState, useEffect } from 'react'
 
 export default function Admin() {
     // TODO db call
@@ -25,20 +28,17 @@ export default function Admin() {
         psc: '12345'
     }
 
-    const ads = [
-        {
-            id: 1,
-            link: 'https://www.google.sk',
-            imageLink: 'https://img.kupino.sk/kupi/thumbs/loga_shopy/tesco_600_600.png',
-            counter: 10
-        },
-        {
-            id: 2,
-            link: 'https://www.google.sk',
-            imageLink: 'https://img.kupino.sk/kupi/thumbs/loga_shopy/tesco_600_600.png',
-            counter: 30
-        },
-    ]
+    const [ads, setAds] = useState([]);
+    useEffect(() => {
+        fetchJSONData('http://localhost:8080/admin/ads', 'GET', undefined)
+        .then(result => {
+            console.log(result)
+            if(result?.success) {
+                setAds(result.data)
+            }
+        })
+    }, []);
+
 
     return (
         <>
@@ -91,7 +91,7 @@ export default function Admin() {
                 <Tab title="Reklamy" className="mt-8">
                     <section>
                         {ads && ads.map(ad => (
-                            <form method="POST" action="" className="grid grid-cols-4 gap-8 p-4">
+                            <form method="POST" action={`http://localhost:8080/admin/ads`} className="grid grid-cols-4 gap-8 p-4">
                                 <InputField
                                     name="link"
                                     type="text"
@@ -102,7 +102,7 @@ export default function Admin() {
                                     name="imageLink"
                                     type="text"
                                     label="Obrázok"
-                                    defaultValue={ad.imageLink}
+                                    defaultValue={ad.image_link}
                                 />
                                 <InputField
                                     name="counter"
@@ -110,6 +110,7 @@ export default function Admin() {
                                     label="Počítadlo"
                                     min="0"
                                     defaultValue={ad.counter}
+                                    disabled
                                 />
                                 <div className="flex flex-col items-center justify-end">
                                     <button type="submit" className="bg-black text-white p-3 border-2 border-black w-full">Zmeniť</button>

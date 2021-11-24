@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }))
 const { sequelize } = require('./models/index.js')
 
 
-app.get('/products', async (_, res) => {
+app.get('/products', (_, res) => {
     sequelize.models.product.findAll()
     .then(products => {
         return res.json({
@@ -198,6 +198,41 @@ app.post('/checkout', async (req, res) => {
         data: []
     })
 });
+
+app.get('/admin/orders', (req, res) => {
+    
+});
+
+app.put('/admin/orders', (req, res) => {
+
+});
+
+app.get('/admin/ads', (req, res) => {
+    sequelize.models.ad.findAll()
+    .then(ads => {
+        return res.json({
+            success: true,
+            data: ads,
+            errors: []
+        })
+    })
+    .catch(err => {
+        return res.status(500).json({
+            success: false,
+            data: [],
+            errors: [{message: err.message}]
+        })
+    })
+});
+
+app.post('/admin/ads', (req, res) => {
+
+});
+
+app.put('/admin/ads/:id', (req, res) => {
+
+});
+
 
 app.listen(parseInt(process.env.PORT), () => {
     console.log(`Server is running at port: ${process.env.PORT}`)

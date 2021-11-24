@@ -4,7 +4,7 @@ const {
 } = require('sequelize');
 const { v4 } = require('uuid');
 module.exports = (sequelize, DataTypes) => {
-  class Ads extends Model {
+  class ad extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       console.log(models)
     }
   };
-  Ads.init({
+  ad.init({
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -26,8 +26,8 @@ module.exports = (sequelize, DataTypes) => {
     counter: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Ads',
+    modelName: 'ad',
     freezeTableName: true
   });
-  return Ads;
+  return ad;
 };
