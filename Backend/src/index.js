@@ -318,6 +318,29 @@ app.put('/admin/ads/:id', (req, res) => {
     const { link, image_link } = req.body;
     const id = req.params.id;
 
+    const errors = []
+
+    try {
+        url = new URL(link);
+    } catch (_) {
+        errors.push({field: 'link', message: 'invalid format'})
+    }
+
+    try {
+        url = new URL(image_link);
+    } catch (_) {
+        errors.push({ field: 'image_link', message: 'invalid format' })
+    }
+
+
+    if(errors.length > 0) {
+        return res.status(400).json({
+            success: false,
+            data: [],
+            errors
+        })
+    }
+
     sequelize.models.ad.findByPk(id)
         .then(async ad => {
             ad.link = link
