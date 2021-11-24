@@ -90,8 +90,27 @@ export default function Admin() {
                 </Tab>
                 <Tab title="Reklamy" className="mt-8">
                     <section>
+                        <h2 class="font-medium text-2xl py-2">Nová reklama</h2>
+                        <form method="POST" action="http://localhost:8080/admin/ads" className="grid grid-cols-3 gap-8 py-2">
+                                <InputField
+                                    name="link"
+                                    type="text"
+                                    label="Link"
+                                />
+                                <InputField
+                                    name="imageLink"
+                                    type="text"
+                                    label="Obrázok"
+                                />
+                                <div className="flex flex-col items-center justify-end">
+                                    <button type="submit" className="bg-black text-white p-3 border-2 border-black w-full">Pridať</button>
+                                </div>
+                        </form>
+                    </section>
+                    <section className="mt-8">
+                            <h2 class="font-medium text-2xl py-2">Reklamy</h2>
                         {ads && ads.map(ad => (
-                            <form method="POST" action={`http://localhost:8080/admin/ads`} className="grid grid-cols-4 gap-8 p-4">
+                            <form method="POST" action={`http://localhost:8080/admin/ads`} className="grid grid-cols-4 gap-8 py-2">
                                 <InputField
                                     name="link"
                                     type="text"
