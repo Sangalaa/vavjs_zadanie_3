@@ -2,9 +2,15 @@ import { useEffect, useState } from 'react'
 import AdBanner from '../components/ad-banner'
 import Header from '../components/header'
 import { fetchJSONData } from '../utils/utils'
+import usePersistentState from '../hooks/usePersistentState'
 
 export default function ThankYou() {
     const [ad, setAd] = useState();
+    const [, setCart] = usePersistentState('cart', []);
+
+    useEffect(() => {
+        setCart([])
+    })
 
     useEffect(() => {
         fetchJSONData('http://localhost:8080/ads', 'GET', undefined)

@@ -114,14 +114,13 @@ export default function Admin() {
                                             />
                                         </>
                                     ))}
-                                    {/* <p className="text-right">Celkom:{
-                                    orders ? ' ' + orders.reduce((previous, current, index) => {
-                                        if(index === 1) {
-                                            return previous.price * previous.quantity + current.price * current.quantity
-                                        }
+                                    <div>
+                                        Celková cena: 
+                                    {' ' + orders.reduce((previous, current) => {
                                         return previous + current.price * current.quantity
-                                    })
-                                : ' ' + 0}€</p> */}
+                                    }, 0)
+                                    }€
+                                    </div>
                                 </section>
                                 <section>
                                     <h2 className="text-xl font-medium my-2">Informácie o používateľovi</h2>

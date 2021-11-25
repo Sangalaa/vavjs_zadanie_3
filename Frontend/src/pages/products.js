@@ -35,9 +35,9 @@ export default function Products() {
                         />
                     )}
                 </div>
-                <div>
+                {cartProducts && cartProducts.length > 0 && <div>
                     <Cart cartProducts={cartProducts} />
-                </div>
+                </div>}
             </div>
         </>
     );
