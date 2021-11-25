@@ -289,8 +289,9 @@ app.get("/ads/:id", (req, res) => {
 app.get('/admin/orders', (req, res) => {
     sequelize.models.order.findAll({ include: [
         { model: sequelize.models.order_item, attributes: ['quantity', 'price', 'product_id'], 
-            include: [{model: sequelize.models.product, attributes: ['price', 'image_link', 'name']}] }
-    ] })
+            include: [{model: sequelize.models.product, attributes: ['price', 'image_link', 'name']}]}
+        , {model: sequelize.models.user, attributes: ['firstName', 'lastName', 'email']}],
+         })
         .then(async orders => {
             return res.json({
                 success: true,
