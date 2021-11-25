@@ -1,8 +1,22 @@
+import { useEffect, useState } from 'react'
 import AdBanner from '../components/ad-banner'
 import Header from '../components/header'
+import { fetchJSONData } from '../utils/utils'
 
 export default function ThankYou() {
-    
+    const [ad, setAd] = useState();
+
+    useEffect(() => {
+        fetchJSONData('http://localhost:8080/ads', 'GET', undefined)
+        .then(result => {
+            if(result.success) {
+                if(result.data.length > 0) {
+                    setAd(result.data[0])
+                }
+            }
+        })
+        .catch(err => console.log(err))
+    }, [])
 
     return (
         <>
@@ -10,11 +24,11 @@ export default function ThankYou() {
 
         <main className="px-8">
             <div>
-                <AdBanner
-                    imageUrl='https://muzikercdn.com/uploads/products/6397/639786/thumb_2870d1bf.jpg'
-                    link='https://www.google.sk'
-                    counter={10}
-                />
+                    {ad && <AdBanner
+                        imageUrl={ad.image_link}
+                        link={`http://localhost:8080/ads/${ad.id}`}
+                        counter={ad.counter}
+                    />}
                 <h1 className="text-4xl text-bold text-center mt-8">Ďakujeme za objednávku</h1>
             </div>
         </main>

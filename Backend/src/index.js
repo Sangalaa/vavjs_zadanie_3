@@ -246,7 +246,7 @@ app.get('/ads', (req, res) => {
     .then(ad => {
         return res.json({
             success: true,
-            data: [ad],
+            data: ad,
             errors: []
         })
     })
@@ -259,7 +259,7 @@ app.get('/ads', (req, res) => {
     })
 });
 
-app.post("/ads/:id", (req, res) => {
+app.get("/ads/:id", (req, res) => {
     const id = req.params.id;
 
     sequelize.models.ad.findByPk(id)
@@ -275,11 +275,7 @@ app.post("/ads/:id", (req, res) => {
         ad.counter += 1;
         await ad.save()
 
-        return res.json({
-            success: true,
-            data: [ad],
-            errors: []
-        })
+        return res.redirect(ad.link);
     })
     .catch(err => {
         return res.status(500).json({
