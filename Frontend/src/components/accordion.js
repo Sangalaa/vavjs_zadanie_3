@@ -33,5 +33,5 @@ export default function Accordion({title, children}) {
 
 Accordion.propTypes = {
     title: PropTypes.string,
-    children: PropTypes.object
+    children: PropTypes.array
 }

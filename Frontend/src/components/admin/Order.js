@@ -19,13 +19,15 @@ export default function Order({order, user}) {
     return (
         <div className="flex flex-row items-center justify-between">
             <Accordion
-                title="Title"
+                key={user.id}
+                title={`Objednávka používateľa ${user.email}`}
             >
                 <section>
                     <h2 className="text-xl font-medium mb-2">Objednaný tovar</h2>
                     {order.order_items.map(order_item => (
                         <>
                             <CartItem
+                                key={order_item.id}
                                 name={order_item.product.name}
                                 price={order_item.price}
                                 quantity={order_item.quantity}

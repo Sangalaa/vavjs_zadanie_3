@@ -8,6 +8,7 @@ export default function Cart({cartProducts}) {
 
             {cartProducts && cartProducts.map((product) => 
                 <CartItem
+                    key={`cart:${product.id}`}
                     name={product.name}
                     price={product.price}
                     quantity={product.quantity}

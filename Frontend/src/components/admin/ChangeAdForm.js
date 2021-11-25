@@ -39,6 +39,7 @@ export default function ChangeAdForm({id, link, image_link, counter, ads, setAds
     return (
         <div className="grid grid-cols-5 gap-8 py-2">
             <InputField
+                key={`changeAdLink:${id}`}
                 name="link"
                 type="text"
                 label="Link"
@@ -49,6 +50,7 @@ export default function ChangeAdForm({id, link, image_link, counter, ads, setAds
                 error={errors.filter(err => err.field === 'link')[0]?.message}
             />
             <InputField
+                key={`changeAdImageLink:${id}`}
                 name="image_link"
                 type="text"
                 label="Obrázok"
@@ -59,6 +61,7 @@ export default function ChangeAdForm({id, link, image_link, counter, ads, setAds
                 error={errors.filter(err => err.field === 'image_link')[0]?.message}
             />
             <InputField
+                key={`changeAdCounter:${id}`}
                 name="counter"
                 type="number"
                 label="Počítadlo"

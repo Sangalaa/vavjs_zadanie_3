@@ -10,7 +10,7 @@ export default function ThankYou() {
 
     useEffect(() => {
         setCart([])
-    })
+    }, [setCart])
 
     useEffect(() => {
         fetchJSONData('http://localhost:8080/ads', 'GET', undefined)

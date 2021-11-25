@@ -9,5 +9,5 @@ export default function Tab({children, ...props}) {
 }
 
 Tab.propTypes = {
-    children: PropTypes.object,
+    children: PropTypes.array,
 }

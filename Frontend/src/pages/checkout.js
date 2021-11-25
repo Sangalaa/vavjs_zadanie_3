@@ -51,6 +51,7 @@ export default function Checkout() {
                                     <div className="grid grid-cols-2 gap-8">
                                         <div className="col-span-2">
                                             <InputField
+                                                key="emailInputField"
                                                 name="email"
                                                 type="email"
                                                 label="Email"
@@ -60,6 +61,7 @@ export default function Checkout() {
                                         </div>
 
                                         <InputField
+                                            key="nameInputField"
                                             name="name"
                                             type="text"
                                             label="Meno"
@@ -68,6 +70,7 @@ export default function Checkout() {
                                         />
 
                                         <InputField
+                                            key="surnameInputField"
                                             name="surname"
                                             type="text"
                                             label="Priezvisko"
@@ -76,6 +79,7 @@ export default function Checkout() {
                                         />
 
                                         <InputField
+                                            key="streetInputField"
                                             name="street"
                                             type="text"
                                             label="Ulica"
@@ -84,6 +88,7 @@ export default function Checkout() {
                                         />
 
                                         <InputField
+                                            key="houseNumberInputField"
                                             name="houseNumber"
                                             type="text"
                                             label="Číslo"
@@ -92,6 +97,7 @@ export default function Checkout() {
                                         />
 
                                         <InputField
+                                            key="cityInputField"
                                             name="city"
                                             type="text"
                                             label="Mesto"
@@ -100,6 +106,7 @@ export default function Checkout() {
                                         />
 
                                         <InputField
+                                            key="pscInputField"
                                             name="psc"
                                             type="text"
                                             label="PSČ"
@@ -118,6 +125,7 @@ export default function Checkout() {
                                 <div className="flex flex-col items-center mt-8">
                                     {cartProducts && cartProducts.map(product =>
                                         <CartItem
+                                            key={product.id}
                                             name={product.name}
                                             price={product.price}
                                             quantity={product.quantity}

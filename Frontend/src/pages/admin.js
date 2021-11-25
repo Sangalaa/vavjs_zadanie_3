@@ -33,9 +33,10 @@ export default function Admin() {
         <>
             <Header />
             <main className="px-8">
-                <Tabs>
-                    <Tab title="Objednávky" className="mt-8 space-y-4">
+                <Tabs key="tabs">
+                    <Tab key="objednavky" title="Objednávky" className="mt-8 space-y-4">
                         {orders && orders.map(order => <Order
+                            key={order.id}
                             order={order}
                             user={{
                                 name: order.user.firstName,
@@ -48,18 +49,20 @@ export default function Admin() {
                             }}
                         />)}
                     </Tab>
-                    <Tab title="Reklamy" className="mt-8">
+                    <Tab key="reklamy" title="Reklamy" className="mt-8">
                         <section>
-                            <h2 class="font-medium text-2xl py-2">Nová reklama</h2>
+                            <h2 className="font-medium text-2xl py-2">Nová reklama</h2>
                             <AddAdForm
+                                key="addAdForm"
                                 ads={ads}
                                 setAds={setAds}
                             />
                         </section>
                         <section className="mt-8">
-                            <h2 class="font-medium text-2xl py-2">Reklamy</h2>
+                            <h2 className="font-medium text-2xl py-2">Reklamy</h2>
                             {ads && ads.map(ad => (
                                 <ChangeAdForm
+                                    key={ad.id}
                                     id={ad.id}
                                     link={ad.link}
                                     image_link={ad.image_link}

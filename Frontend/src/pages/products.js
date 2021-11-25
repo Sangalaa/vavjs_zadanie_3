@@ -26,6 +26,7 @@ export default function Products() {
                 <div className="grid grid-cols-3 gap-8 px-8 flex-grow">
                     {products && products.map(product => 
                         <ProductCard
+                            key={product.id}
                             id={product.id}
                             name={product.name}
                             price={product.price}
@@ -36,7 +37,9 @@ export default function Products() {
                     )}
                 </div>
                 {cartProducts && cartProducts.length > 0 && <div>
-                    <Cart cartProducts={cartProducts} />
+                    <Cart
+                        key="cart"
+                        cartProducts={cartProducts} />
                 </div>}
             </div>
         </>

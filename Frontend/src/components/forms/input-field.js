@@ -9,9 +9,9 @@ export default function InputField({
 }) {
     return (
         <div className="flex flex-col">
-            <label class="text-left text-gray-500" for={name}>{label}</label>
+            <label className="text-left text-gray-500" htmlFor={name}>{label}</label>
             <input 
-                class="
+                className="
                     bg-white border-2 
                     border-gray-600 
                     focus:outline-none 
