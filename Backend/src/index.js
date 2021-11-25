@@ -176,6 +176,8 @@ app.post('/checkout', async (req, res) => {
                 throw new JsonError(payload)
             });
 
+
+
         // put items from cart into order
         await cart.reduce(async (promise, cartItem) => {
             await promise
@@ -192,13 +194,7 @@ app.post('/checkout', async (req, res) => {
                     .catch(err => reject(err))
             })
                 .catch(err => {
-                    const payload = err.errors.map((err) => ({
-                        field: err.path,
-                        message: err.message,
-                        value: err.value
-                    }))
-
-                    throw new JsonError(payload)
+                    throw new Error(err.message)
                 });
 
             await sequelize.models.order_item.create({
@@ -221,7 +217,6 @@ app.post('/checkout', async (req, res) => {
         await transaction.commit()
     }
     catch (err) {
-        console.log(err)
         await transaction.rollback()
 
         if (err instanceof JsonError) {
@@ -262,6 +257,37 @@ app.get('/ads', (req, res) => {
             errors: [{ field: '', message: err.message, value: ''}]
         })
     })
+});
+
+app.post("/ads/:id", (req, res) => {
+    const id = req.params.id;
+
+    sequelize.models.ad.findByPk(id)
+    .then(async ad => {
+        if(!ad) {
+            return res.status(400).json({
+                success: false,
+                data: [],
+                errors: [{field: 'id', message: 'Invalid id', value: id}]
+            })
+        }
+
+        ad.counter += 1;
+        await ad.save()
+
+        return res.json({
+            success: true,
+            data: [ad],
+            errors: []
+        })
+    })
+    .catch(err => {
+        return res.status(500).json({
+            success: false,
+            data: [],
+            errors: [{field: '', message: err.message, value: ''}]
+        })
+    });
 });
 
 app.get('/admin/orders', (req, res) => {
@@ -379,11 +405,7 @@ app.post('/admin/ads', (req, res) => {
             return res.status(400).json({
                 success: false,
                 data: [],
-                errors: err.errors.map((err) => ({
-                    field: err.path,
-                    message: err.message,
-                    value: err.value
-                }))
+                errors: [{ field: '', message: err.message, value: '' }]
             })
         });
 });
@@ -448,11 +470,11 @@ app.put('/admin/ads/:id', (req, res) => {
             return res.status(400).json({
                 success: false,
                 data: [],
-                errors: err.errors.map((err) => ({
-                    field: err.path,
-                    message: err.message,
-                    value: err.value
-                }))
+                errors: [{ 
+                    field: '',
+                    value: '',
+                    message: err.message
+                }]
             })
         });
 });
