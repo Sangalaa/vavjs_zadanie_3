@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import Accordion from "../components/accordion";
+import AddAdForm from '../components/admin/AddAdForm';
+import ChangeAdForm from '../components/admin/ChangeAdForm';
 import CartItem from "../components/cart/cart-item";
 import InputField from "../components/forms/input-field";
 import Header from "../components/header";
@@ -39,34 +41,7 @@ export default function Admin() {
             })
     }, []);
 
-    const [addAdFormErrors, setAddAdFormErrors] = useState([]);
-
-    const handleAddAd = async (e) => {
-        e.preventDefault();
-
-        const form = new FormData(e.target)
-
-        const payload = Object.fromEntries(form.entries());
-
-        const response = await fetchJSONData(e.target.action, 'POST', JSON.stringify(payload))
-            .catch(err => console.log(err))
-
-        if (response.success) {
-            e.target.reset()
-
-            const ad = response.data[0]
-
-            setAds([...ads, {
-                id: ad?.id,
-                counter: ad?.counter,
-                link: ad?.link,
-                image_link: ad?.image_link
-            }])
-        }
-        else {
-            setAddAdFormErrors(response.errors)
-        }
-    }
+    
 
     const handleChangeAd = async (e) => {
         e.preventDefault();
@@ -142,60 +117,22 @@ export default function Admin() {
                     <Tab title="Reklamy" className="mt-8">
                         <section>
                             <h2 class="font-medium text-2xl py-2">Nová reklama</h2>
-                            <form method="POST" action="http://localhost:8080/admin/ads" className="grid grid-cols-3 gap-8 py-2" onSubmit={handleAddAd}>
-                                <InputField
-                                    name="link"
-                                    type="text"
-                                    label="Link"
-                                    required
-                                    error={addAdFormErrors.filter(err => err.field === 'link')[0]?.message}
-                                />
-                                <InputField
-                                    name="imageLink"
-                                    type="text"
-                                    label="Obrázok"
-                                    required
-                                    error={addAdFormErrors.filter(err => err.field === 'imageLink')[0]?.message}
-                                />
-                                <div className="flex flex-col items-center justify-end">
-                                    <button type="submit" className="bg-black text-white p-3 border-2 border-black w-full">Pridať</button>
-                                </div>
-                            </form>
+                            <AddAdForm
+                                ads={ads}
+                                setAds={setAds}
+                            />
                         </section>
                         <section className="mt-8">
                             <h2 class="font-medium text-2xl py-2">Reklamy</h2>
                             {ads && ads.map(ad => (
-                                <div className="grid grid-cols-5 gap-8 py-2">
-                                    <InputField
-                                        name="link"
-                                        type="text"
-                                        label="Link"
-                                        defaultValue={ad.link}
-                                        required
-                                    />
-                                    <InputField
-                                        name="imageLink"
-                                        type="text"
-                                        label="Obrázok"
-                                        defaultValue={ad.image_link}
-                                        required
-                                    />
-                                    <InputField
-                                        name="counter"
-                                        type="number"
-                                        label="Počítadlo"
-                                        min="0"
-                                        defaultValue={ad.counter}
-                                        disabled
-                                        required
-                                    />
-                                    <div className="flex flex-col items-center justify-end">
-                                        <button className="bg-black text-white p-3 border-2 border-black w-full">Zmeniť</button>
-                                    </div>
-                                    <div className="flex flex-col items-center justify-end">
-                                        <button className="bg-black text-white p-3 border-2 border-black w-full">Vymazat</button>
-                                    </div>
-                                </div>
+                                <ChangeAdForm
+                                    id={ad.id}
+                                    link={ad.link}
+                                    image_link={ad.image_link}
+                                    counter={ad.counter}
+                                    ads={ads}
+                                    setAds={setAds}
+                                />
                             ))}
                         </section>
                     </Tab>
