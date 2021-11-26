@@ -120,9 +120,13 @@ app.post('/checkout', async (req, res) => {
 
     const transaction = await sequelize.transaction();
 
+    let user = undefined
+    let order = undefined
+    const orderItems = []
+
     try {
         // create user
-        const user = await new Promise((resolve, reject) => {
+        user = await new Promise((resolve, reject) => {
             sequelize.models.user.create({
                 firstName: name,
                 lastName: surname,
@@ -148,7 +152,7 @@ app.post('/checkout', async (req, res) => {
             })
 
         // create order
-        const order = await new Promise((resolve, reject) => {
+        order = await new Promise((resolve, reject) => {
             sequelize.models.order.create({
                 user_id: user.id,
                 status: 'unpaid',
@@ -176,8 +180,6 @@ app.post('/checkout', async (req, res) => {
                 throw new JsonError(payload)
             });
 
-
-
         // put items from cart into order
         await cart.reduce(async (promise, cartItem) => {
             await promise
@@ -197,7 +199,7 @@ app.post('/checkout', async (req, res) => {
                     throw new Error(err.message)
                 });
 
-            await sequelize.models.order_item.create({
+            const orderItem = await sequelize.models.order_item.create({
                 order_id: order.id,
                 product_id: product.id,
                 quantity: cartItem.quantity,
@@ -212,6 +214,7 @@ app.post('/checkout', async (req, res) => {
 
                     throw new JsonError(payload)
                 });
+            orderItems.push(orderItem)
         }, Promise.resolve())
 
         await transaction.commit()
@@ -237,7 +240,23 @@ app.post('/checkout', async (req, res) => {
     return res.json({
         success: true,
         errors: [],
-        data: []
+        data: [{
+            id: order.id,
+            user_id: user.id,
+            status: order.status,
+            street: order.street,
+            houseNumber: order.houseNumber,
+            city: order.city,
+            psc: order.psc,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
+            order_items: orderItems,
+            user: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email
+            }
+        }]
     })
 });
 
@@ -514,7 +533,7 @@ app.delete('/admin/ads/:id', (req, res) => {
         })
 });
 
-app.listen(parseInt(process.env.PORT), () => {
+module.exports = app.listen(parseInt(process.env.PORT), () => {
     console.log(`Server is running at port: ${process.env.PORT}`)
 
     testDatabaseConnection()
