@@ -1,6 +1,7 @@
-const { assert, expect } = require('chai');
+const { expect } = require('chai');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const chaiEach = require('chai-each')
 const server = require('../src/index.js')
 const moment = require('moment')
 const {v4} = require('uuid')
@@ -8,6 +9,7 @@ const {v4} = require('uuid')
 chai.should()
 
 chai.use(chaiHttp)
+chai.use(chaiEach)
 
 describe('Fetch orders', () => {
     it("Should have correct data types", (done) => {
@@ -161,4 +163,95 @@ describe('Create order', () => {
                     });
             });
     });
+
+    it('Should fail to create a new order', (done) => {
+        // https://stackoverflow.com/questions/12303989/cartesian-product-of-multiple-arrays-in-javascript
+        let f = (a, b) => [].concat(...a.map(a => b.map(b => [].concat(a, b))));
+        let cartesian = (a, b, ...c) => b ? cartesian(f(a, b), ...c) : a;
+
+        const email = `${v4()}@gmail.com`
+
+        const entries = cartesian(
+            [{email, valid: true}, {email: 'gmail.com', valid: false}],
+            [{name: 'Jozko', valid: true}, {name: 'jozko', valid: false}],
+            [{surname: 'Mrkvicka', valid: true}],
+            [{street: 'Mrkvova', valid: true}, {street: 'mrkvova', valid: false}],
+            [{houseNumber: '12/3a', valid: true}, {houseNumber: 'abc*', valid: false}],
+            [{city: 'Bratislava', valid: true}, {city: 'bratislava', valid: false}],
+            [{psc: '12345', valid: true}, {psc: 'abc', valid: false}],
+            [{cart: [{id: `${v4()}`, quantity: 0}], valid: false}]
+        )
+
+        const errorMessage = {
+            email: 'e-mail has incorrect format',
+            name: 'name has incorrect format',
+            surname: 'surname has incorrect format',
+            street: 'street has incorrect format',
+            houseNumber: 'houseNumber has incorrect format',
+            city: 'city has incorrect format',
+            psc: 'psc has incorrect format',
+            cart: 'cart contains incorrect data'
+        }
+
+        entries.forEach((entry) => {   
+            const payload = Object.assign({}, ...entry.map(property => {
+                const {valid, ...rest} = property
+
+                return rest
+            }))
+
+            if (entry.map(property => property.valid).every(item => item === true)) {
+                return
+            }
+
+            chai.request(server)
+                .post('/checkout')
+                .send(payload)
+                .end((err, response) => {
+                    response.body.should.be.a('object')
+
+                    response.body.should.have.property('success')
+                    response.body.should.have.property('data')
+                    response.body.should.have.property('errors')
+
+                    response.body.success.should.be.a('boolean')
+                    response.body.data.should.be.a('array')
+                    response.body.errors.should.be.a('array')
+
+                    response.body.success.should.eq(false)
+                    response.body.data.should.have.length(0)
+                    response.body.errors.should.not.have.length(0)
+
+                    expect(response.body.errors).each.have.property('field')
+                    expect(response.body.errors).each.have.property('message')
+                    expect(response.body.errors).each.have.property('value')
+
+                    if(entry.map(property => property.valid).every(item => item === true)) {
+                        response.should.have.status(500)
+                    }
+                    else {
+                        response.should.have.status(400)
+
+                        const errorProperties = entry.map(property => {
+                            const {valid, ...rest} = property
+
+                            return !valid ? rest : {}
+                        })
+
+                        errorProperties.forEach(property => {
+                            for(const [key, value] of Object.entries(property)) {
+                                
+                                expect(response.body.errors).to.deep.include.members([{
+                                    field: key,
+                                    message: errorMessage[key],
+                                    value: value
+                                }])
+                            }
+                        })
+                    }
+                })
+        })
+
+        done()
+    })
 });

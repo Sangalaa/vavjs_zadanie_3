@@ -20,7 +20,7 @@ const validateStreet = (street) => {
 }
 
 const validateHouseNumber = (houseNumber) => {
-    const houseNumberRegex = /^[A-Za-z0-9]{1,}$/
+    const houseNumberRegex = /^[A-Za-z0-9/]{1,}$/
     return houseNumberRegex.test(houseNumber)
 }
 
@@ -39,6 +39,14 @@ const validateImageURL = (url) => {
     return urlRegex.test(url);
 }
 
+const validateCart = (cart) => {
+    if(!cart || !Array.isArray(cart)) {
+        return false
+    }
+
+    return cart.every(cartItem => 'id' in cartItem && 'quantity' in cartItem && cartItem.quantity > 0)
+}
+
 module.exports = {
     validateEmail,
     validateName,
@@ -47,5 +55,6 @@ module.exports = {
     validateHouseNumber,
     validateCity,
     validatePsc,
-    validateImageURL
+    validateImageURL,
+    validateCart
 }

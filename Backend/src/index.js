@@ -10,7 +10,8 @@ const {
     validateHouseNumber,
     validateCity,
     validatePsc,
-    validateImageURL
+    validateImageURL,
+    validateCart
 } = require('./utils/utils')
 
 const app = express()
@@ -19,8 +20,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }))
 
 // database setup
-const { sequelize } = require('./models/index.js')
-
+const { sequelize } = require('./models/index.js');
 
 app.get('/products', (_, res) => {
     sequelize.models.product.findAll()
@@ -102,6 +102,14 @@ app.post('/checkout', async (req, res) => {
         })
     }
 
+    if(!validateCart(cart)) {
+        errors.push({
+            field: 'cart',
+            message: 'cart contains incorrect data',
+            value: cart
+        })
+    }
+
     if (errors.length > 0) {
         return res.status(400).json({
             success: false,
@@ -109,7 +117,6 @@ app.post('/checkout', async (req, res) => {
             errors
         })
     }
-
 
     class JsonError extends Error {
         constructor(data) {
@@ -131,7 +138,7 @@ app.post('/checkout', async (req, res) => {
                 firstName: name,
                 lastName: surname,
                 email
-            })
+            }, {transaction})
                 .then(user => {
                     if (!user) {
                         reject(`Error while creating a new user`)
@@ -160,7 +167,7 @@ app.post('/checkout', async (req, res) => {
                 houseNumber,
                 city,
                 psc
-            })
+            }, {transaction})
                 .then(order => {
                     if (!order) {
                         reject(`Error while creating a new order`)
@@ -204,7 +211,7 @@ app.post('/checkout', async (req, res) => {
                 product_id: product.id,
                 quantity: cartItem.quantity,
                 price: product.price
-            })
+            }, {transaction})
                 .catch((err) => {
                     const payload = err.errors.map((err) => ({
                         field: err.path,
