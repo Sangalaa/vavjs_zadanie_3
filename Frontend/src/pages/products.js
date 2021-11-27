@@ -39,7 +39,8 @@ export default function Products() {
                 {cartProducts && cartProducts.length > 0 && <div>
                     <Cart
                         key="cart"
-                        cartProducts={cartProducts} />
+                        cartProducts={cartProducts}
+                        setCartProducts={setCartProducts} />
                 </div>}
             </div>
         </>

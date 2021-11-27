@@ -1,7 +1,8 @@
 import CartItem from './cart-item'
+import PropTypes from 'prop-types'
 import * as ROUTES from '../../constants/routes'
 
-export default function Cart({cartProducts}) {
+export default function Cart({cartProducts, setCartProducts}) {
     return (
         <div className="px-4">
             <h2 className="text-2xl text-bold text-center mb-4">Nákupný košík</h2>
@@ -9,10 +10,13 @@ export default function Cart({cartProducts}) {
             {cartProducts && cartProducts.map((product) => 
                 <CartItem
                     key={`cart:${product.id}`}
+                    id={product.id}
                     name={product.name}
                     price={product.price}
                     quantity={product.quantity}
                     imageUrl={product.imageUrl}
+                    cartProducts={cartProducts}
+                    setCartProducts={setCartProducts}
                 />
             )}
 
@@ -29,4 +33,9 @@ export default function Cart({cartProducts}) {
             </div>
         </div>
     )
+}
+
+Cart.propTypes = {
+    cartProducts: PropTypes.array,
+    setCartProducts: PropTypes.func
 }

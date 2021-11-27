@@ -18,9 +18,9 @@ module.exports = {
       [
         {
           id: v4(),
-          name: 'Sendy Audio Peacock',
-          image_link: 'https://muzikercdn.com/uploads/products/8269/826929/thumb_d_gallery_base_1243e45b.jpg',
-          price: 1499.0
+          name: 'LAG Tramontane T70D Natural Satin',
+          image_link: 'https://muzikercdn.com/uploads/products/369/36914/thumb_base_a3a6e9fc.jpg',
+          price: 186.0
         },
         {
           id: v4(),
