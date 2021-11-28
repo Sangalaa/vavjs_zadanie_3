@@ -8,6 +8,7 @@ const ThankYou = lazy(() => import('./pages/thankyou'))
 const Admin = lazy(() => import('./pages/admin'))
 
 export default function App() {
+  console.log(process.env.REACT_APP_BACKEND_URL)
   return (
     <Router>
       <Suspense fallback={<p>Loading...</p>}>

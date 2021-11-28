@@ -34,7 +34,7 @@ export default function AddAdForm({ads, setAds}) {
     }
 
     return (
-        <form method="POST" action="http://localhost:8080/admin/ads" className="grid grid-cols-3 gap-8 py-2" onSubmit={addNewAd}>
+        <form method="POST" action={`${process.env.REACT_APP_BACKEND_URL}/admin/ads`} className="grid grid-cols-3 gap-8 py-2" onSubmit={addNewAd}>
             <InputField
                 key="addAdLinkInputField"
                 name="link"

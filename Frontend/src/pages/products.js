@@ -11,7 +11,7 @@ export default function Products() {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        fetchJSONData('http://localhost:8080/products', 'GET', undefined)
+        fetchJSONData(`${process.env.REACT_APP_BACKEND_URL}/products`, 'GET', undefined)
         .then(response => {
             if(response?.success) {
                 setProducts(response.data)

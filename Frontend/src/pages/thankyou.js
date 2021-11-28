@@ -13,7 +13,7 @@ export default function ThankYou() {
     }, [setCart])
 
     useEffect(() => {
-        fetchJSONData('http://localhost:8080/ads', 'GET', undefined)
+        fetchJSONData(`${process.env.REACT_APP_BACKEND_URL}/ads`, 'GET', undefined)
         .then(result => {
             if(result.success) {
                 if(result.data.length > 0) {
@@ -32,7 +32,7 @@ export default function ThankYou() {
             <div>
                     {ad && <AdBanner
                         imageUrl={ad.image_link}
-                        link={`http://localhost:8080/ads/${ad.id}`}
+                        link={`${process.env.REACT_APP_BACKEND_URL}/ads/${ad.id}`}
                         counter={ad.counter}
                     />}
                 <h1 className="text-4xl text-bold text-center mt-8">Ďakujeme za objednávku</h1>

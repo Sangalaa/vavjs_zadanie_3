@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  backend:
+    container_name: backend-container
+    restart: always
+    build: ./backend
+    ports:
+      - "4000:4000"
+    depends_on:
+      - migration
+  postgresql:
+    container_name: postgres-backend
+    image: "postgres:12.4"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: vavjs_zadanie_3
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  frontend:
+    container_name: frontend-container
+    build: ./frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+  migration:
+    container_name: database-migration
+    build: ./backend
+    command: ["npm", "run", 'init']
+    depends_on:
+      - postgresql
+volumes:
+  db-data:
