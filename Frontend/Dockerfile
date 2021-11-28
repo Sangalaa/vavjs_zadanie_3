@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:14 as build
 
 WORKDIR /usr/src/app
 
@@ -12,6 +12,12 @@ RUN npm run build
 
 ENV NODE_ENV production
 
+FROM nginx
+COPY --from=build /usr/src/app/build /usr/share/nginx/html
+
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx/nginx.conf /etc/nginx/conf.d
+
 EXPOSE 8080
 
-CMD [ "npx", "http-server", "build/"]
+CMD [ "nginx", "-g", "daemon off;"]
