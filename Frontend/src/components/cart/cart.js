@@ -17,6 +17,7 @@ export default function Cart({cartProducts, setCartProducts}) {
                     imageUrl={product.imageUrl}
                     cartProducts={cartProducts}
                     setCartProducts={setCartProducts}
+                    showDeleteButton={true}
                 />
             )}
 
