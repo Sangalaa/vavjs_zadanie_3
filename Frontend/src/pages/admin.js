@@ -11,7 +11,7 @@ import { fetchJSONData } from "../utils/utils";
 export default function Admin() {
     const [ads, setAds] = useState([]);
     useEffect(() => {
-        fetchJSONData('http://localhost:8080/admin/ads', 'GET', undefined)
+        fetchJSONData(`${process.env.REACT_APP_BACKEND_URL}/admin/ads`, 'GET', undefined)
             .then(result => {
                 if (result?.success) {
                     setAds(result.data)
@@ -21,7 +21,7 @@ export default function Admin() {
 
     const [orders, setOrders] = useState([]);
     useEffect(() => {
-        fetchJSONData('http://localhost:8080/admin/orders', 'GET', undefined)
+        fetchJSONData(`${process.env.REACT_APP_BACKEND_URL}/admin/orders`, 'GET', undefined)
         .then(result => {
             if(result?.success) {
                 setOrders(result.data)

@@ -25,7 +25,7 @@ export default function Checkout() {
 
         payload = { ...payload, cart: cartData }
 
-        const response = await fetchJSONData('http://localhost:8080/checkout', 'POST', JSON.stringify(payload))
+        const response = await fetchJSONData(`${process.env.REACT_APP_BACKEND_URL}/checkout`, 'POST', JSON.stringify(payload))
             .catch(err => console.log(err))
 
         if(response.success) {

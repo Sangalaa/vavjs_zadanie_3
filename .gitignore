@@ -125,3 +125,5 @@ dist
 
 app.css
 yarn.lock
+
+build/

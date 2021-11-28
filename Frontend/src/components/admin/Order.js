@@ -7,7 +7,7 @@ export default function Order({order, user}) {
     const [paid, setPaid] = useState(order.status === 'paid')
 
     const payOrder = () => {
-        fetchJSONData(`http://localhost:8080/admin/orders/${order.id}`, 'PUT', undefined)
+        fetchJSONData(`${process.env.REACT_APP_BACKEND_URL}/admin/orders/${order.id}`, 'PUT', undefined)
         .then(result => {
             if(result.success) {
                 setPaid(true)

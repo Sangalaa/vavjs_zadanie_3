@@ -15,7 +15,7 @@ export default function ChangeAdForm({id, link, image_link, counter, ads, setAds
             image_link: imageLinkValue
         }
 
-        const response = await fetchJSONData(`http://localhost:8080/admin/ads/${id}`, 'PUT', JSON.stringify(payload))
+        const response = await fetchJSONData(`${process.env.REACT_APP_BACKEND_URL}/admin/ads/${id}`, 'PUT', JSON.stringify(payload))
             .catch(err => console.log(err))
 
         if(!response.success) {
@@ -24,7 +24,7 @@ export default function ChangeAdForm({id, link, image_link, counter, ads, setAds
     }
 
     const handleDeleteAd = async (e) => {
-        const response = await fetchJSONData(`http://localhost:8080/admin/ads/${id}`, 'DELETE', undefined)
+        const response = await fetchJSONData(`${process.env.REACT_APP_BACKEND_URL}/admin/ads/${id}`, 'DELETE', undefined)
             .catch(err => console.log(err))
 
         if(response.success) {
