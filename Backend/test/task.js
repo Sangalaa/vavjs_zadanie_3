@@ -62,7 +62,7 @@ describe('Create order', () => {
         chai.request(server)
             .get('/products')
             .end((productsErr, productsResponse) => {
-                // create random orde
+                // create random order
 
                 const email = `${v4()}@gmail.com`
 
@@ -164,6 +164,67 @@ describe('Create order', () => {
             });
     });
 
+    it('Should set order status as paid', (done) => {
+        chai.request(server)
+            .get('/admin/orders')
+            .end((ordersErr, ordersResponse) => {
+                const unpaidOrders = ordersResponse.body.data.filter(product => product.status === 'unpaid')
+
+                if (unpaidOrders.length === 0) {
+                    done('No unpaid products found')
+                    return
+                }
+
+                const unpaidOrder = unpaidOrders[0]
+
+                chai.request(server)
+                    .put(`/admin/orders/${unpaidOrder.id}`)
+                .end((err, response) => {
+                    response.body.should.be.a('object')
+
+                    response.body.should.have.property('success')
+                    response.body.should.have.property('data')
+                    response.body.should.have.property('errors')
+
+                    response.body.success.should.be.a('boolean')
+                    response.body.data.should.be.a('array')
+                    response.body.errors.should.be.a('array')
+
+                    response.body.success.should.eq(true)
+                    response.body.data.should.have.length(1)
+                    response.body.errors.should.have.length(0)
+
+                    const order = response.body.data[0]
+
+                    expect(order).to.be.a('object')
+                    expect(order).to.have.keys(['id', 'user_id', 'status', 'street', 'houseNumber', 'city', 'psc', 'createdAt', 'updatedAt'])
+                    expect(order.id).to.be.a('string')
+                    expect(order.user_id).to.be.a('string')
+                    expect(order.status).to.be.a('string')
+                    expect(order.street).to.be.a('string')
+                    expect(order.houseNumber).to.be.a('string')
+                    expect(order.city).to.be.a('string')
+                    expect(order.psc).to.be.a('string')
+                    expect(order.createdAt).to.be.a('string')
+                    expect(order.updatedAt).to.be.a('string')
+
+                    expect(order.id).to.eq(unpaidOrder.id)
+                    expect(order.user_id).to.eq(unpaidOrder.user_id)
+                    expect(order.status).to.eq('paid')
+                    expect(order.street).to.eq(unpaidOrder.street)
+                    expect(order.houseNumber).to.eq(unpaidOrder.houseNumber)
+                    expect(order.city).to.eq(unpaidOrder.city)
+                    expect(order.psc).to.eq(unpaidOrder.psc)
+                    expect(order.createdAt).to.eq(unpaidOrder.createdAt)
+
+                    expect(moment(order.createdAt).isValid()).to.be.true
+                    expect(moment(order.updatedAt).isValid()).to.be.true
+
+                    done()
+                })
+            })
+    })
+
     it('Should fail to create a new order', (done) => {
         // https://stackoverflow.com/questions/12303989/cartesian-product-of-multiple-arrays-in-javascript
         let f = (a, b) => [].concat(...a.map(a => b.map(b => [].concat(a, b))));
@@ -172,14 +233,14 @@ describe('Create order', () => {
         const email = `${v4()}@gmail.com`
 
         const entries = cartesian(
-            [{email, valid: true}, {email: 'gmail.com', valid: false}],
-            [{name: 'Jozko', valid: true}, {name: 'jozko', valid: false}],
-            [{surname: 'Mrkvicka', valid: true}],
-            [{street: 'Mrkvova', valid: true}, {street: 'mrkvova', valid: false}],
-            [{houseNumber: '12/3a', valid: true}, {houseNumber: 'abc*', valid: false}],
-            [{city: 'Bratislava', valid: true}, {city: 'bratislava', valid: false}],
-            [{psc: '12345', valid: true}, {psc: 'abc', valid: false}],
-            [{cart: [{id: `${v4()}`, quantity: 0}], valid: false}]
+            [{ email, valid: true }, { email: 'gmail.com', valid: false }],
+            [{ name: 'Jozko', valid: true }, { name: 'jozko', valid: false }],
+            [{ surname: 'Mrkvicka', valid: true }],
+            [{ street: 'Mrkvova', valid: true },],
+            [{ houseNumber: '12/3a', valid: true }, { houseNumber: 'abc*', valid: false }],
+            [{ city: 'Bratislava', valid: true }, { city: 'bratislava', valid: false }],
+            [{ psc: '12345', valid: true }, { psc: 'abc', valid: false }],
+            [{ cart: [{ id: `${v4()}`, quantity: 0 }], valid: false }]
         )
 
         const errorMessage = {
@@ -193,9 +254,9 @@ describe('Create order', () => {
             cart: 'cart contains incorrect data'
         }
 
-        entries.forEach((entry) => {   
+        entries.forEach((entry) => {
             const payload = Object.assign({}, ...entry.map(property => {
-                const {valid, ...rest} = property
+                const { valid, ...rest } = property
 
                 return rest
             }))
@@ -226,21 +287,21 @@ describe('Create order', () => {
                     expect(response.body.errors).each.have.property('message')
                     expect(response.body.errors).each.have.property('value')
 
-                    if(entry.map(property => property.valid).every(item => item === true)) {
+                    if (entry.map(property => property.valid).every(item => item === true)) {
                         response.should.have.status(500)
                     }
                     else {
                         response.should.have.status(400)
 
                         const errorProperties = entry.map(property => {
-                            const {valid, ...rest} = property
+                            const { valid, ...rest } = property
 
                             return !valid ? rest : {}
                         })
 
                         errorProperties.forEach(property => {
-                            for(const [key, value] of Object.entries(property)) {
-                                
+                            for (const [key, value] of Object.entries(property)) {
+
                                 expect(response.body.errors).to.deep.include.members([{
                                     field: key,
                                     message: errorMessage[key],
