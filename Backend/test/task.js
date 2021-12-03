@@ -16,7 +16,6 @@ describe('Fetch orders', () => {
         chai.request(server)
             .get('/products')
             .end((err, response) => {
-                console.log(response.body)
                 response.should.have.status(200)
                 response.body.should.be.a('object')
 
@@ -160,6 +159,75 @@ describe('Create order', () => {
                         })
 
                         done()
+                    });
+            });
+    });
+
+    it('Should fail to create a new order with same email address', (done) => {
+        chai.request(server)
+            .get('/products')
+            .end((productsErr, productsResponse) => {
+                // create random order
+
+                const email = `${v4()}@gmail.com`
+
+                const payload = {
+                    email,
+                    name: 'Jozko',
+                    surname: 'Mrkvicka',
+                    street: 'Mrkvova',
+                    houseNumber: '123',
+                    city: 'Bratislava',
+                    psc: '12345',
+                    cart: [
+                        {
+                            id: productsResponse.body.data[0].id,
+                            quantity: 2
+                        },
+                        {
+                            id: productsResponse.body.data[1].id,
+                            quantity: 3
+                        }
+                    ]
+                }
+
+                chai.request(server)
+                    .post('/checkout')
+                    .set('Content-Type', 'application/json')
+                    .send(payload)
+                    .end((newOrderErr, newOrderResponse) => {
+                        newOrderResponse.should.have.status(200)
+
+                        chai.request(server)
+                            .post('/checkout')
+                            .set('Content-Type', 'application/json')
+                            .send(payload)
+                            .end((err, response) => {
+                                console.log(response.body)
+                                response.should.have.status(400)
+
+                                response.body.should.be.a('object')
+
+                                response.body.should.have.property('success')
+                                response.body.should.have.property('data')
+                                response.body.should.have.property('errors')
+
+                                response.body.success.should.be.a('boolean')
+                                response.body.data.should.be.a('array')
+                                response.body.errors.should.be.a('array')
+
+                                response.body.success.should.eq(false)
+                                response.body.data.should.have.length(0)
+                                response.body.errors.should.have.length(1)
+
+                                expect(response.body.errors[0]).to.eql({
+                                    field: 'email',
+                                    message: 'email must be unique',
+                                    value: email
+                                })
+
+                                done()
+                            })
                     });
             });
     });
