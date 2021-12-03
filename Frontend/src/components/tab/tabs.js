@@ -11,7 +11,7 @@ export default function Tabs({children}) {
             <ul>
                 {children.map((child, index) => (
                     <TabTitle
-                        key={index}
+                        key={`tab-title-${index}`}
                         title={child.props.title}
                         index={index}
                         setSelectedTab={setSelectedTab}

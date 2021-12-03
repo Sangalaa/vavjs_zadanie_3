@@ -7,7 +7,7 @@ export default function TabTitle({title, selectedTab, setSelectedTab, index}) {
     }, [setSelectedTab, index])
     
     return (
-        <li className={ 'inline mr-2 ' + (selectedTab === index ? 'border-b-2 border-indigo-500 text-indigo-500' : '') }>
+        <li className={ 'inline mr-2 ' + (selectedTab === index ? 'border-b-2 border-red-500 text-red-500' : '') }>
             <button onClick={handleClick}>{title}</button>
         </li>
     )

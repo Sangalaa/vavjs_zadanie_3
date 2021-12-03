@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 
-export default function usePersistentState(key, defaultValue) {
+export default function useLocalStorageState(key, defaultValue) {
     const [state, setState] = useState(() => JSON.parse(localStorage.getItem(key)) || defaultValue);
 
     useEffect(() => {

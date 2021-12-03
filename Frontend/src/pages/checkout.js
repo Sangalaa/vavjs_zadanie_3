@@ -1,15 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import CartItem from "../components/cart/cart-item";
 import InputField from "../components/forms/input-field";
 import Header from "../components/header";
-import usePersistentState from "../hooks/usePersistentState";
+import * as ROUTES from '../constants/routes';
+import useLocalStorageState from "../hooks/useLocalStorageState";
 import { fetchJSONData } from "../utils/utils";
-import { useNavigate } from 'react-router-dom'
-import * as ROUTES from '../constants/routes'
 
 export default function Checkout() {
     const navigate = useNavigate()
-    const [cartProducts,] = usePersistentState('cart', [])
+    const [cartProducts,] = useLocalStorageState('cart', [])
     const [formErrors, setFormErrors] = useState([]);
 
     const postData = async (e) => {
@@ -28,7 +28,7 @@ export default function Checkout() {
         const response = await fetchJSONData(`${process.env.REACT_APP_BACKEND_URL}/checkout`, 'POST', JSON.stringify(payload))
             .catch(err => console.log(err))
 
-        if(response.success) {
+        if (response.success) {
             navigate(ROUTES.THANK_YOU)
         }
         else {
@@ -42,7 +42,7 @@ export default function Checkout() {
             <main className="px-8">
                 <article>
                     <h1 className="text-4xl text-bold text-center mb-8">Objednávka tovaru</h1>
-                    {cartProducts && cartProducts.length > 0 ? 
+                    {cartProducts && cartProducts.length > 0 ?
                         <div className="flex flex-row items-start justify-between">
                             <section className="max-w-xl">
                                 <h2 className="text-2xl text-bold text-center">Dodacie údaje</h2>

@@ -3,8 +3,6 @@ export default function CartItem({id, name, price, quantity, imageUrl, cartProdu
     const deleteCartItem = () => {
         const productIndex = cartProducts.findIndex((product => product.id === id))
 
-        console.log(productIndex)
-
         if(productIndex >= 0) {
             setCartProducts(cartProducts.filter(cartItem => cartItem.id !== id))
         }
