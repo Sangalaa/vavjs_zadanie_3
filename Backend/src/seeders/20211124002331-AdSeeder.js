@@ -19,7 +19,7 @@ module.exports = {
         id: v4(),
         link: 'https://www.google.com',
         image_link: 'https://muzikercdn.com/uploads/products/8269/826929/thumb_d_gallery_base_1243e45b.jpg',
-        counter: 5
+        counter: 0
       }
     ], {})
   },
