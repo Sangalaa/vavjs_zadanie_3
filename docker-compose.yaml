@@ -11,6 +11,7 @@ services:
   postgresql:
     container_name: postgres-backend
     image: "postgres:12.4"
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
@@ -21,6 +22,7 @@ services:
   frontend:
     container_name: frontend-container
     build: ./frontend
+    restart: always
     ports:
       - "8080:8080"
     depends_on:
@@ -28,6 +30,7 @@ services:
   migration:
     container_name: database-migration
     build: ./backend
+    restart: on-failure
     command: ["npm", "run", 'init']
     depends_on:
       - postgresql
