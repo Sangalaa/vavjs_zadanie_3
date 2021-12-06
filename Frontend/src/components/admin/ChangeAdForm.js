@@ -8,6 +8,7 @@ export default function ChangeAdForm({id, link, image_link, counter, ads, setAds
 
     const [linkValue, setLinkValue] = useState(link)
     const [imageLinkValue, setImageLinkValue] = useState(image_link)
+    const [counterValue, setCounterValue] = useState(counter);
 
     const handleChangeAd = async (e) => {
         const payload = {
@@ -20,6 +21,12 @@ export default function ChangeAdForm({id, link, image_link, counter, ads, setAds
 
         if(!response.success) {
             setErrors(response.errors)
+        }
+        else {
+            const ad = response.data[0];
+            setLinkValue(ad?.link);
+            setImageLinkValue(ad?.image_link);
+            setCounterValue(ad?.counter);
         }
     }
 
@@ -66,7 +73,7 @@ export default function ChangeAdForm({id, link, image_link, counter, ads, setAds
                 type="number"
                 label="Počítadlo"
                 min="0"
-                defaultValue={counter}
+                value={counterValue}
                 disabled
                 required
                 error={errors.filter(err => err.field === 'counter')[0]?.message}
