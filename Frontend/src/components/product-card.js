@@ -5,7 +5,7 @@ export default function ProductCard({id, name, price, imageUrl, cartProducts, se
     const [quantity, setQuantity] = useState(0);
 
     const handleClick = () => {
-        if(quantity && quantity === 0) {
+        if(quantity <= 0) {
             return;
         }
 
